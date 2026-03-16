@@ -17,6 +17,7 @@
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.99.1",
+    "@vercel/analytics": "^2.0.1",
     "pinia": "^2.1.7",
     "vue": "^3.4.38",
     "vue-router": "^4.4.3"

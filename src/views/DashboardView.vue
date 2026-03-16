@@ -2,6 +2,7 @@
 import { computed, onMounted } from "vue";
 import { useRouter } from "vue-router";
 
+import AnalyticsPanel from "@/components/AnalyticsPanel.vue";
 import { useAuthStore } from "@/stores/auth";
 
 const router = useRouter();
@@ -20,6 +21,8 @@ async function signOut() {
 </script>
 
 <template>
+  <AnalyticsPanel />
+  <div class="spacer"></div>
   <section class="card">
     <div class="card__body">
       <h1 style="margin: 0 0 6px">Dashboard</h1>
@@ -31,4 +34,3 @@ async function signOut() {
     </div>
   </section>
 </template>
-
