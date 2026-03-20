@@ -61,7 +61,76 @@ supabase link --project-ref <PROJECT_REF>
 npm run db:push
 ```
 
+Sau khi push migration role mới, bootstrap `master_admin` bằng seed function ở mục 6.1.
+
 ### Cách 2: Chạy trực tiếp trên PostgreSQL (psql/SQL Editor)
 
 - Lấy connection string của database production (Supabase Dashboard → Project Settings → Database).
 - Run file migration: `supabase/migrations/20260316170000_init.sql`.
+
+## 5) Role model
+
+- `user`: chỉ xem orders và thống kê, không CRUD
+- `admin`: toàn quyền CRUD orders
+- `master_admin`: toàn quyền CRUD orders + tạo admin con
+
+Các route chính:
+
+- `/user/dashboard`
+- `/user/orders`
+- `/admin/dashboard`
+- `/admin/orders`
+- `/admin/accounts`
+
+`/dashboard` sẽ tự redirect theo role hiện tại.
+
+## 6) Edge Function tạo admin con
+
+Function đã được scaffold tại:
+
+- `supabase/functions/create-admin-account/index.ts`
+
+Deploy function:
+
+```bash
+supabase functions deploy create-admin-account
+```
+
+Function này dùng `SUPABASE_SERVICE_ROLE_KEY` của project trong môi trường Supabase Functions và chỉ cho phép caller có role `master_admin` tạo `admin` con.
+
+## 6.1) Seed master admin đầu tiên
+
+Function seed nằm ở:
+
+- `supabase/functions/seed-master-admin/index.ts`
+
+Deploy function:
+
+```bash
+supabase functions deploy seed-master-admin
+```
+
+Set secrets cho function:
+
+```bash
+supabase secrets set MASTER_ADMIN_SETUP_TOKEN=<mot-token-bi-mat>
+supabase secrets set MASTER_ADMIN_EMAIL=<email-admin-dau-tien>
+supabase secrets set MASTER_ADMIN_PASSWORD=<password-admin-dau-tien>
+supabase secrets set MASTER_ADMIN_FULL_NAME="Master Admin"
+supabase secrets set MASTER_ADMIN_USERNAME=master-admin
+```
+
+Gọi function để seed hoặc nâng cấp account thành `master_admin`:
+
+```bash
+curl -X POST \
+  "https://<PROJECT_REF>.supabase.co/functions/v1/seed-master-admin" \
+  -H "x-setup-token: <mot-token-bi-mat>"
+```
+
+Behavior:
+
+- nếu email chưa tồn tại: tạo account mới với role `master_admin`
+- nếu email đã tồn tại: update account đó thành `master_admin`
+
+Sau khi seed xong, đăng nhập bằng email/password đã set ở trên tại `/login`. App sẽ tự đưa bạn vào `/admin/dashboard`.

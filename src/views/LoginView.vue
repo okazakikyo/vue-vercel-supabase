@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { onMounted, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 
 import { useAuthStore } from "@/stores/auth";
@@ -14,6 +14,13 @@ const loading = ref(false);
 const errorText = ref<string | null>(null);
 const infoText = ref<string | null>(null);
 const mode = ref<"signin" | "signup">("signin");
+
+async function redirectIfAuthenticated() {
+  await auth.init();
+  if (auth.session) {
+    await router.replace(auth.isAdmin ? { name: "admin-dashboard" } : { name: "user-dashboard" });
+  }
+}
 
 async function submit() {
   errorText.value = null;
@@ -38,6 +45,19 @@ async function submit() {
     loading.value = false;
   }
 }
+
+watch(
+  () => auth.session,
+  async (session) => {
+    if (session) {
+      await router.replace(auth.isAdmin ? { name: "admin-dashboard" } : { name: "user-dashboard" });
+    }
+  },
+);
+
+onMounted(async () => {
+  await redirectIfAuthenticated();
+});
 </script>
 
 <template>
@@ -45,9 +65,9 @@ async function submit() {
     <article class="card login-card login-card--intro">
       <div class="card__body login-card__body">
         <p class="login-card__eyebrow">Access control</p>
-        <h1 class="login-card__title">Đăng nhập để mở dashboard và đồng bộ orders với Supabase.</h1>
+        <h1 class="login-card__title">Đăng nhập để vào khu quản lý orders chung cho người dùng.</h1>
         <p class="muted login-card__copy">
-          Flow này dùng email/password cơ bản, phù hợp để bạn bootstrap project trước rồi mở rộng OAuth sau.
+          Flow này dùng email/password cơ bản, phù hợp để khởi tạo nhanh hệ thống quản lý orders chung cho người dùng.
         </p>
         <div class="login-stat-list">
           <div>
@@ -55,8 +75,8 @@ async function submit() {
             <span>Supabase session</span>
           </div>
           <div>
-            <strong>Data</strong>
-            <span>Orders + CSV import</span>
+            <strong>Orders</strong>
+            <span>Quản lý chung + CSV import</span>
           </div>
           <div>
             <strong>Deploy</strong>
@@ -69,7 +89,7 @@ async function submit() {
     <article class="card login-card login-card--form">
       <div class="card__body login-card__body">
         <p class="login-card__eyebrow">{{ mode === "signup" ? "Create account" : "Welcome back" }}</p>
-        <h2 class="login-form__title">{{ mode === "signup" ? "Tạo tài khoản mới" : "Đăng nhập workspace" }}</h2>
+        <h2 class="login-form__title">{{ mode === "signup" ? "Tạo tài khoản mới" : "Đăng nhập quản lý orders" }}</h2>
         <p class="muted login-card__copy">Dùng Supabase Auth (email/password).</p>
 
         <form @submit.prevent="submit">
@@ -110,11 +130,12 @@ async function submit() {
 .login-shell {
   display: grid;
   grid-template-columns: minmax(0, 1.1fr) minmax(320px, 0.9fr);
-  gap: 18px;
+  gap: 22px;
+  align-items: stretch;
 }
 
 .login-card__body {
-  padding: 28px;
+  padding: 32px;
 }
 
 .login-card__eyebrow {
@@ -127,18 +148,17 @@ async function submit() {
 }
 
 .login-card__title {
-  margin: 0 0 10px;
+  margin: 0 0 14px;
   font-size: clamp(34px, 4.8vw, 50px);
-  line-height: 1;
 }
 
 .login-card__copy {
-  margin: 0 0 16px;
+  margin: 0 0 18px;
 }
 
 .login-form__title {
-  margin: 0 0 8px;
-  font-size: 28px;
+  margin: 0 0 10px;
+  font-size: 30px;
 }
 
 .login-card__label {
@@ -149,7 +169,7 @@ async function submit() {
 }
 
 .login-card__message {
-  margin: 0 0 12px;
+  margin: 0 0 14px;
   color: var(--muted);
 }
 
@@ -160,13 +180,13 @@ async function submit() {
 .login-stat-list {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 12px;
-  margin-top: 26px;
+  gap: 14px;
+  margin-top: 28px;
 }
 
 .login-stat-list div {
-  padding: 14px;
-  border-radius: 18px;
+  padding: 16px;
+  border-radius: 20px;
   border: 1px solid var(--border);
   background: rgba(255, 255, 255, 0.03);
 }
@@ -188,15 +208,27 @@ async function submit() {
 .login-card__actions {
   justify-content: space-between;
   align-items: center;
+  margin-top: 8px;
 }
 
-@media (max-width: 720px) {
+form {
+  display: grid;
+  gap: 6px;
+}
+
+@media (max-width: 960px) {
   .login-shell {
     grid-template-columns: 1fr;
   }
 
   .login-card__body {
-    padding: 20px;
+    padding: 26px;
+  }
+}
+
+@media (max-width: 720px) {
+  .login-card__body {
+    padding: 22px;
   }
 
   .login-stat-list {

@@ -22,3 +22,6 @@ port = 54323
 [inbucket]
 enabled = true
 port = 54324
+
+[functions.seed-master-admin]
+verify_jwt = false

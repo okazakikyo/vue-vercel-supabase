@@ -12,6 +12,8 @@ const navOpen = ref(false);
 const loggingOut = ref(false);
 
 const isAuthenticated = computed(() => Boolean(auth.session));
+const isAdmin = computed(() => auth.isAdmin);
+const isMasterAdmin = computed(() => auth.isMasterAdmin);
 
 onMounted(async () => {
   await auth.init();
@@ -49,21 +51,42 @@ function closeNav() {
       <RouterLink class="brand" to="/" @click="closeNav">
         <span class="brand__mark">VS</span>
         <span>
-          <strong>Vue Supabase</strong>
-          <small>Orders cockpit</small>
+          <strong>Quản lý orders</strong>
+          <small>Cho người dùng</small>
         </span>
       </RouterLink>
 
       <button class="nav-toggle" type="button" :aria-expanded="navOpen" @click="navOpen = !navOpen">
-        Menu
+        {{ navOpen ? "Đóng" : "Menu" }}
       </button>
 
       <nav class="nav" :class="{ 'nav--open': navOpen }">
         <RouterLink class="nav__link" to="/" @click="closeNav">Home</RouterLink>
-        <RouterLink class="nav__link" to="/dashboard" @click="closeNav">Dashboard</RouterLink>
-        <RouterLink class="nav__link" to="/orders" @click="closeNav">Orders</RouterLink>
+        <RouterLink
+          v-if="isAuthenticated"
+          class="nav__link"
+          :to="isAdmin ? '/admin/dashboard' : '/user/dashboard'"
+          @click="closeNav"
+        >
+          Tổng quan
+        </RouterLink>
+        <RouterLink
+          class="nav__link"
+          :to="isAuthenticated ? (isAdmin ? '/admin/orders' : '/user/orders') : '/orders'"
+          @click="closeNav"
+        >
+          Orders
+        </RouterLink>
+        <RouterLink
+          v-if="isMasterAdmin"
+          class="nav__link"
+          to="/admin/accounts"
+          @click="closeNav"
+        >
+          Admin accounts
+        </RouterLink>
         <button class="nav__action" type="button" :disabled="loggingOut" @click="handleAuthAction">
-          {{ loggingOut ? "..." : isAuthenticated ? "Logout" : "Login" }}
+          {{ loggingOut ? "..." : isAuthenticated ? "Đăng xuất" : "Đăng nhập" }}
         </button>
       </nav>
     </div>
@@ -79,24 +102,24 @@ function closeNav() {
   background: rgba(7, 19, 26, 0.72);
   position: sticky;
   top: 0;
-  z-index: 10;
-  backdrop-filter: blur(16px);
+  z-index: 30;
+  backdrop-filter: blur(18px);
 }
 .header__inner {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 18px 0;
-  gap: 16px;
+  padding: 18px 0 16px;
+  gap: 18px;
   position: relative;
 }
 .brand {
   text-decoration: none;
   color: var(--text);
-  white-space: nowrap;
   display: inline-flex;
-  gap: 12px;
+  gap: 14px;
   align-items: center;
+  min-width: 0;
 }
 .brand strong {
   display: block;
@@ -111,9 +134,9 @@ function closeNav() {
   text-transform: uppercase;
 }
 .brand__mark {
-  width: 44px;
-  height: 44px;
-  border-radius: 14px;
+  width: 46px;
+  height: 46px;
+  border-radius: 16px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -124,13 +147,15 @@ function closeNav() {
 }
 .nav {
   display: flex;
-  gap: 10px;
+  gap: 8px;
   align-items: center;
   padding: 8px;
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.03);
   border: 1px solid var(--border);
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  flex-wrap: wrap;
+  justify-content: flex-end;
 }
 .nav__link {
   color: var(--muted);
@@ -138,6 +163,7 @@ function closeNav() {
   font-weight: 600;
   padding: 10px 14px;
   border-radius: 999px;
+  transition: background 0.18s ease, color 0.18s ease;
 }
 .nav__link.router-link-active {
   color: var(--text);
@@ -165,12 +191,12 @@ function closeNav() {
   cursor: pointer;
 }
 .main {
-  padding: 32px 0 44px;
+  padding: 34px 0 56px;
 }
 
 @media (max-width: 720px) {
   .header__inner {
-    flex-wrap: wrap;
+    padding: 14px 0;
   }
 
   .nav-toggle {
@@ -178,16 +204,22 @@ function closeNav() {
     align-items: center;
     justify-content: center;
     margin-left: auto;
+    min-width: 92px;
   }
 
   .nav {
     display: none;
-    width: 100%;
+    position: absolute;
+    top: calc(100% + 10px);
+    left: 0;
+    right: 0;
     flex-direction: column;
     align-items: stretch;
     gap: 8px;
     padding: 12px;
-    border-radius: 20px;
+    border-radius: 22px;
+    background: var(--surface-elevated);
+    box-shadow: 0 22px 46px rgba(2, 10, 14, 0.28);
   }
 
   .nav--open {
@@ -199,7 +231,19 @@ function closeNav() {
     width: 100%;
     text-align: center;
     justify-content: center;
-    border-radius: 14px;
+    border-radius: 16px;
+  }
+
+  .brand strong {
+    font-size: 14px;
+  }
+
+  .brand small {
+    letter-spacing: 0.1em;
+  }
+
+  .main {
+    padding-top: 22px;
   }
 }
 </style>

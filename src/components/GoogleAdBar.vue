@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, nextTick, onMounted, onUnmounted, ref } from "vue";
+import { computed, nextTick, onMounted, onUnmounted, ref, watch } from "vue";
 
 import { isAdsEnabled, loadAdSenseScript, pushAd } from "@/lib/adsense";
 
@@ -15,16 +15,17 @@ const enabled = computed(
 const adStyle = computed(() =>
   isMobile.value
     ? "display:inline-block;width:320px;max-width:100%;height:50px"
-    : "display:block",
+    : "display:block;width:100%;height:90px",
 );
 
-onMounted(async () => {
+let mediaQuery: MediaQueryList | null = null;
+let handleMediaQueryChange: ((event: MediaQueryListEvent) => void) | null = null;
+
+async function renderAd() {
   if (!enabled.value) {
     return;
   }
 
-  isMobile.value = window.matchMedia("(max-width: 720px)").matches;
-  document.body.classList.add("has-fixed-ad");
   await loadAdSenseScript(client);
   await nextTick();
 
@@ -32,9 +33,35 @@ onMounted(async () => {
     pushAd();
     adElement.value.dataset.loaded = "true";
   }
+}
+
+function syncBodyClass() {
+  document.body.classList.toggle("has-fixed-ad", enabled.value);
+}
+
+onMounted(async () => {
+  mediaQuery = window.matchMedia("(max-width: 720px)");
+  isMobile.value = mediaQuery.matches;
+
+  handleMediaQueryChange = (event: MediaQueryListEvent) => {
+    isMobile.value = event.matches;
+  };
+
+  mediaQuery.addEventListener("change", handleMediaQueryChange);
+
+  syncBodyClass();
+  await renderAd();
+});
+
+watch(enabled, async () => {
+  syncBodyClass();
+  await renderAd();
 });
 
 onUnmounted(() => {
+  if (mediaQuery && handleMediaQueryChange) {
+    mediaQuery.removeEventListener("change", handleMediaQueryChange);
+  }
   document.body.classList.remove("has-fixed-ad");
 });
 
@@ -64,20 +91,9 @@ function closeAd() {
         :style="adStyle"
         :data-ad-client="client"
         :data-ad-slot="slot"
-        :data-ad-format="isMobile ? 'horizontal' : 'horizontal'"
+        :data-ad-format="isMobile ? 'horizontal' : 'auto'"
         data-full-width-responsive="true"
       />
-      <amp-ad
-        width="100vw"
-        height="320"
-        type="adsense"
-        :data-ad-client="client"
-        :data-ad-slot="slot"
-        data-auto-format="rspv"
-        data-full-width=""
-      >
-        <div overflow=""></div>
-      </amp-ad>
     </div>
   </aside>
 </template>
@@ -87,7 +103,7 @@ function closeAd() {
   position: fixed;
   left: 50%;
   transform: translateX(-50%);
-  width: min(92vw, 560px);
+  width: min(92vw, 760px);
   bottom: calc(14px + env(safe-area-inset-bottom));
   z-index: 50;
   pointer-events: none;
@@ -95,8 +111,8 @@ function closeAd() {
 
 .google-ad-bar__inner {
   width: 100%;
-  padding: 8px 10px;
-  border-radius: 16px;
+  padding: 8px 10px 10px;
+  border-radius: 18px;
   border: 1px solid rgba(255, 255, 255, 0.08);
   background: rgba(7, 20, 26, 0.92);
   box-shadow: 0 18px 40px rgba(2, 10, 14, 0.34);
@@ -136,20 +152,20 @@ function closeAd() {
 .google-ad-bar__slot {
   width: 100%;
   min-height: 50px;
-  max-height: 60px;
+  max-height: 90px;
   overflow: hidden;
+  border-radius: 10px;
 }
 
 @media (max-width: 720px) {
   .google-ad-bar {
-    width: calc(100vw - 20px);
-    max-width: 332px;
+    width: min(calc(100vw - 18px), 344px);
     bottom: calc(8px + env(safe-area-inset-bottom));
   }
 
   .google-ad-bar__inner {
-    padding: 5px 6px 6px;
-    border-radius: 12px;
+    padding: 4px 6px 6px;
+    border-radius: 14px;
   }
 
   .google-ad-bar__slot {
@@ -171,15 +187,12 @@ function closeAd() {
 
 @media (max-width: 420px) {
   .google-ad-bar {
-    width: calc(100vw - 16px);
-    max-width: none;
-    margin: auto;
-    text-align: center;
+    width: calc(100vw - 12px);
     bottom: calc(6px + env(safe-area-inset-bottom));
   }
 
   .google-ad-bar__inner {
-    padding: 4px 6px 6px;
+    padding: 4px 5px 6px;
   }
 
   .google-ad-bar__top {

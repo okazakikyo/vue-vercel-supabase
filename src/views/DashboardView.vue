@@ -9,6 +9,11 @@ const router = useRouter();
 const auth = useAuthStore();
 
 const email = computed(() => auth.user?.email ?? null);
+const roleText = computed(() => {
+  if (auth.isMasterAdmin) return "Master admin";
+  if (auth.isAdmin) return "Admin";
+  return "Người dùng";
+});
 
 onMounted(async () => {
   await auth.init();
@@ -24,13 +29,13 @@ async function signOut() {
   <section class="dashboard-shell">
     <article class="card dashboard-hero">
       <div class="card__body dashboard-card__body">
-        <p class="dashboard-card__eyebrow">Signed in workspace</p>
+        <p class="dashboard-card__eyebrow">Quan ly orders</p>
         <div class="dashboard-card__row">
           <div>
-            <h1 class="dashboard-card__title">Dashboard</h1>
-            <p class="muted dashboard-card__copy">Một overview ngắn trước khi đi vào analytics và quản lý orders.</p>
+            <h1 class="dashboard-card__title">Tổng quan hệ thống</h1>
+            <p class="muted dashboard-card__copy">Một overview ngắn cho khu vực quản trị orders, analytics và quyền hệ thống.</p>
           </div>
-          <div class="dashboard-card__chip">{{ email || "No active session" }}</div>
+          <div class="dashboard-card__chip">{{ roleText }} · {{ email || "No active session" }}</div>
         </div>
 
         <div class="dashboard-card__stats">
@@ -44,13 +49,34 @@ async function signOut() {
           </div>
           <div>
             <span>Orders</span>
-            <strong>Ready</strong>
+            <strong>Shared</strong>
+          </div>
+          <div v-if="auth.isMasterAdmin">
+            <span>Admin accounts</span>
+            <strong>Manageable</strong>
           </div>
         </div>
 
         <button class="btn btn--danger dashboard-card__logout" type="button" @click="signOut">Sign out</button>
       </div>
     </article>
+
+    <div class="dashboard-card__quick-grid">
+      <article class="card">
+        <div class="card__body dashboard-card__mini">
+          <span>Điều phối</span>
+          <strong>Admin có thể CRUD toàn bộ orders</strong>
+          <p class="muted">Tạo, sửa, xoá và import dữ liệu dùng chung cho toàn hệ thống.</p>
+        </div>
+      </article>
+      <article class="card">
+        <div class="card__body dashboard-card__mini">
+          <span>Truy cập</span>
+          <strong>User chỉ xem dashboard và thống kê</strong>
+          <p class="muted">Quyền xem được tách riêng để dữ liệu an toàn và dễ kiểm soát hơn.</p>
+        </div>
+      </article>
+    </div>
 
     <AnalyticsPanel />
   </section>
@@ -59,11 +85,11 @@ async function signOut() {
 <style scoped>
 .dashboard-shell {
   display: grid;
-  gap: 18px;
+  gap: 22px;
 }
 
 .dashboard-card__body {
-  padding: 28px;
+  padding: 32px;
 }
 
 .dashboard-card__eyebrow {
@@ -89,7 +115,7 @@ async function signOut() {
 }
 
 .dashboard-card__copy {
-  margin: 0 0 16px;
+  margin: 0 0 18px;
 }
 
 .dashboard-card__chip {
@@ -105,14 +131,14 @@ async function signOut() {
 
 .dashboard-card__stats {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 12px;
-  margin: 14px 0 24px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+  margin: 18px 0 24px;
 }
 
 .dashboard-card__stats div {
-  padding: 16px;
-  border-radius: 18px;
+  padding: 18px;
+  border-radius: 20px;
   border: 1px solid var(--border);
   background: rgba(255, 255, 255, 0.03);
 }
@@ -130,12 +156,43 @@ async function signOut() {
   margin-bottom: 6px;
 }
 
+.dashboard-card__quick-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.dashboard-card__mini {
+  display: grid;
+  gap: 10px;
+}
+
+.dashboard-card__mini span {
+  color: var(--muted);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.dashboard-card__mini strong,
+.dashboard-card__mini p {
+  margin: 0;
+}
+
+@media (max-width: 960px) {
+  .dashboard-card__stats,
+  .dashboard-card__quick-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
 @media (max-width: 720px) {
   .dashboard-card__body {
-    padding: 20px;
+    padding: 22px;
   }
 
-  .dashboard-card__stats {
+  .dashboard-card__stats,
+  .dashboard-card__quick-grid {
     grid-template-columns: 1fr;
   }
 

@@ -318,8 +318,8 @@ onMounted(() => {
   <div class="orders-page">
     <header class="hero">
       <div class="hero__title-wrap">
-        <h1><span class="hero__dot"></span>Quan ly don do uong</h1>
-        <p class="hero__copy">Them don, import CSV, chon nhieu de xoa va xem tong hop theo thang tu du lieu Supabase.</p>
+        <h1><span class="hero__dot"></span>Quản lý orders chung cho người dùng</h1>
+        <p class="hero__copy">Tạo order, import CSV, chọn nhiều để xoá và xem tổng hợp theo tháng từ dữ liệu Supabase.</p>
       </div>
       <div class="hero__badge">{{ orders.length }} don</div>
     </header>
@@ -617,7 +617,7 @@ onMounted(() => {
 .orders-page {
   display: flex;
   flex-direction: column;
-  gap: 22px;
+  gap: 24px;
   font-family: "Sora", "Space Grotesk", sans-serif;
   --orders-surface: #131828;
   --orders-surface-2: #1a2035;
@@ -644,8 +644,8 @@ onMounted(() => {
 .hero {
   display: flex;
   justify-content: space-between;
-  gap: 18px;
-  padding: 28px;
+  gap: 20px;
+  padding: 32px;
   align-items: flex-start;
   background: linear-gradient(135deg, #0d1520, #161e35);
 }
@@ -675,7 +675,7 @@ onMounted(() => {
 }
 
 .hero__copy {
-  margin: 14px 0 0;
+  margin: 16px 0 0;
   max-width: 640px;
   color: var(--orders-muted);
   font-size: 13px;
@@ -696,22 +696,22 @@ onMounted(() => {
 
 .tabs {
   display: flex;
-  gap: 6px;
+  gap: 8px;
   flex-wrap: wrap;
   background: var(--orders-surface-2);
   border: 1px solid var(--orders-border);
-  border-radius: 10px;
-  padding: 6px;
+  border-radius: 14px;
+  padding: 8px;
 }
 
 .tab {
   flex: 1;
-  min-width: 90px;
+  min-width: 110px;
   border: none;
   background: transparent;
   color: var(--orders-muted);
-  border-radius: 7px;
-  padding: 10px 16px;
+  border-radius: 10px;
+  padding: 11px 16px;
   font-weight: 600;
   cursor: pointer;
   font-family: inherit;
@@ -725,7 +725,7 @@ onMounted(() => {
 }
 
 .panel {
-  padding: 28px;
+  padding: 30px;
 }
 
 .import-banner,
@@ -743,10 +743,10 @@ onMounted(() => {
 }
 
 .import-banner {
-  margin-bottom: 28px;
-  padding: 18px 20px;
+  margin-bottom: 30px;
+  padding: 20px 22px;
   border: 1px dashed rgba(56, 232, 198, 0.2);
-  border-radius: 12px;
+  border-radius: 16px;
   background: rgba(56, 232, 198, 0.03);
 }
 
@@ -782,7 +782,7 @@ onMounted(() => {
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--orders-muted);
-  margin-bottom: 18px;
+  margin-bottom: 20px;
   display: flex;
   align-items: center;
   gap: 10px;
@@ -808,8 +808,8 @@ onMounted(() => {
 .form-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-  gap: 16px;
-  margin-bottom: 24px;
+  gap: 18px;
+  margin-bottom: 26px;
 }
 
 .field {
@@ -857,7 +857,7 @@ onMounted(() => {
 .order-list,
 .summary-grid {
   display: grid;
-  gap: 18px;
+  gap: 20px;
 }
 
 .user-row {
@@ -867,8 +867,8 @@ onMounted(() => {
   align-items: center;
   background: #0c0f1a;
   border: 1px solid var(--orders-border);
-  border-radius: 10px;
-  padding: 12px 14px;
+  border-radius: 14px;
+  padding: 14px 16px;
   transition: border-color 0.2s;
 }
 
@@ -892,8 +892,8 @@ onMounted(() => {
   justify-content: center;
   gap: 6px;
   border: none;
-  border-radius: 8px;
-  padding: 9px 16px;
+  border-radius: 10px;
+  padding: 10px 16px;
   font-weight: 600;
   cursor: pointer;
   white-space: nowrap;
@@ -1001,9 +1001,9 @@ onMounted(() => {
   align-items: center;
   gap: 12px;
   flex-wrap: wrap;
-  margin-bottom: 20px;
-  padding: 14px 18px;
-  border-radius: 10px;
+  margin-bottom: 22px;
+  padding: 16px 18px;
+  border-radius: 14px;
   background: rgba(108, 142, 247, 0.07);
   border: 1px solid rgba(108, 142, 247, 0.25);
   animation: slideIn 0.18s ease;
@@ -1068,8 +1068,8 @@ onMounted(() => {
 .order-card {
   background: var(--orders-surface-2);
   border: 1px solid var(--orders-border);
-  border-radius: 12px;
-  padding: 20px;
+  border-radius: 16px;
+  padding: 22px;
   transition: all 0.2s;
 }
 
@@ -1203,22 +1203,22 @@ tbody tr:last-child td {
 }
 
 .edit-panel {
-  margin-top: 18px;
-  padding-top: 18px;
+  margin-top: 20px;
+  padding-top: 20px;
   border-top: 1px solid var(--orders-border);
   animation: slideIn 0.18s ease;
 }
 
 .summary-grid {
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 18px;
+  gap: 20px;
 }
 
 .summary-card {
   background: var(--orders-surface-2);
   border: 1px solid var(--orders-border);
-  border-radius: 12px;
-  padding: 22px;
+  border-radius: 16px;
+  padding: 24px;
   transition: all 0.2s;
 }
 
@@ -1277,7 +1277,7 @@ tbody tr:last-child td {
 
 .empty-state {
   text-align: center;
-  padding: 56px 24px;
+  padding: 58px 24px;
   color: var(--orders-muted);
 }
 
@@ -1313,6 +1313,7 @@ tbody tr:last-child td {
 @media (max-width: 720px) {
   .hero {
     flex-direction: column;
+    padding: 24px 22px;
   }
 
   .toolbar {
@@ -1342,11 +1343,19 @@ tbody tr:last-child td {
     width: 100%;
     justify-content: flex-end;
   }
+
+  .toolbar__controls > * {
+    width: 100%;
+  }
+
+  .button {
+    width: 100%;
+  }
 }
 
 @media (max-width: 640px) {
   .panel {
-    padding: 20px;
+    padding: 22px 18px;
   }
 
   .user-row {
