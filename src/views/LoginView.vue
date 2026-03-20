@@ -41,40 +41,174 @@ async function submit() {
 </script>
 
 <template>
-  <section class="card" style="max-width: 520px; margin: 0 auto">
-    <div class="card__body">
-      <h1 style="margin: 0 0 6px">Login</h1>
-      <p class="muted" style="margin: 0 0 14px">Dùng Supabase Auth (email/password).</p>
-
-      <form @submit.prevent="submit">
-        <label class="muted" for="email">Email</label>
-        <div class="spacer"></div>
-        <input id="email" v-model="email" class="input" autocomplete="email" inputmode="email" required />
-
-        <div class="spacer"></div>
-        <label class="muted" for="password">Password</label>
-        <div class="spacer"></div>
-        <input id="password" v-model="password" class="input" type="password" autocomplete="current-password" required />
-
-        <div class="spacer"></div>
-        <p v-if="errorText" style="margin: 0 0 12px; color: var(--danger)">{{ errorText }}</p>
-        <p v-else-if="infoText" style="margin: 0 0 12px; color: var(--muted)">{{ infoText }}</p>
-
-        <div class="row" style="justify-content: space-between; align-items: center">
-          <button class="btn btn--primary" type="submit" :disabled="loading">
-            {{ loading ? "Đang xử lý..." : mode === "signup" ? "Sign up" : "Sign in" }}
-          </button>
-
-          <button
-            class="btn"
-            type="button"
-            :disabled="loading"
-            @click="mode = mode === 'signup' ? 'signin' : 'signup'"
-          >
-            Chuyển sang {{ mode === "signup" ? "Sign in" : "Sign up" }}
-          </button>
+  <section class="login-shell">
+    <article class="card login-card login-card--intro">
+      <div class="card__body login-card__body">
+        <p class="login-card__eyebrow">Access control</p>
+        <h1 class="login-card__title">Đăng nhập để mở dashboard và đồng bộ orders với Supabase.</h1>
+        <p class="muted login-card__copy">
+          Flow này dùng email/password cơ bản, phù hợp để bạn bootstrap project trước rồi mở rộng OAuth sau.
+        </p>
+        <div class="login-stat-list">
+          <div>
+            <strong>Auth</strong>
+            <span>Supabase session</span>
+          </div>
+          <div>
+            <strong>Data</strong>
+            <span>Orders + CSV import</span>
+          </div>
+          <div>
+            <strong>Deploy</strong>
+            <span>Vercel ready</span>
+          </div>
         </div>
-      </form>
-    </div>
+      </div>
+    </article>
+
+    <article class="card login-card login-card--form">
+      <div class="card__body login-card__body">
+        <p class="login-card__eyebrow">{{ mode === "signup" ? "Create account" : "Welcome back" }}</p>
+        <h2 class="login-form__title">{{ mode === "signup" ? "Tạo tài khoản mới" : "Đăng nhập workspace" }}</h2>
+        <p class="muted login-card__copy">Dùng Supabase Auth (email/password).</p>
+
+        <form @submit.prevent="submit">
+          <label class="muted login-card__label" for="email">Email</label>
+          <div class="spacer"></div>
+          <input id="email" v-model="email" class="input" autocomplete="email" inputmode="email" required />
+
+          <div class="spacer"></div>
+          <label class="muted login-card__label" for="password">Password</label>
+          <div class="spacer"></div>
+          <input id="password" v-model="password" class="input" type="password" autocomplete="current-password" required />
+
+          <div class="spacer"></div>
+          <p v-if="errorText" class="login-card__message login-card__message--error">{{ errorText }}</p>
+          <p v-else-if="infoText" class="login-card__message">{{ infoText }}</p>
+
+          <div class="row login-card__actions">
+            <button class="btn btn--primary" type="submit" :disabled="loading">
+              {{ loading ? "Đang xử lý..." : mode === "signup" ? "Sign up" : "Sign in" }}
+            </button>
+
+            <button
+              class="btn"
+              type="button"
+              :disabled="loading"
+              @click="mode = mode === 'signup' ? 'signin' : 'signup'"
+            >
+              Chuyển sang {{ mode === "signup" ? "Sign in" : "Sign up" }}
+            </button>
+          </div>
+        </form>
+      </div>
+    </article>
   </section>
 </template>
+
+<style scoped>
+.login-shell {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(320px, 0.9fr);
+  gap: 18px;
+}
+
+.login-card__body {
+  padding: 28px;
+}
+
+.login-card__eyebrow {
+  margin: 0 0 12px;
+  color: var(--accent);
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.login-card__title {
+  margin: 0 0 10px;
+  font-size: clamp(34px, 4.8vw, 50px);
+  line-height: 1;
+}
+
+.login-card__copy {
+  margin: 0 0 16px;
+}
+
+.login-form__title {
+  margin: 0 0 8px;
+  font-size: 28px;
+}
+
+.login-card__label {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.login-card__message {
+  margin: 0 0 12px;
+  color: var(--muted);
+}
+
+.login-card__message--error {
+  color: var(--danger);
+}
+
+.login-stat-list {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 26px;
+}
+
+.login-stat-list div {
+  padding: 14px;
+  border-radius: 18px;
+  border: 1px solid var(--border);
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.login-stat-list strong,
+.login-stat-list span {
+  display: block;
+}
+
+.login-stat-list strong {
+  margin-bottom: 4px;
+}
+
+.login-stat-list span {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.login-card__actions {
+  justify-content: space-between;
+  align-items: center;
+}
+
+@media (max-width: 720px) {
+  .login-shell {
+    grid-template-columns: 1fr;
+  }
+
+  .login-card__body {
+    padding: 20px;
+  }
+
+  .login-stat-list {
+    grid-template-columns: 1fr;
+  }
+
+  .login-card__actions {
+    flex-direction: column;
+  }
+
+  .login-card__actions .btn {
+    width: 100%;
+  }
+}
+</style>

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { Analytics } from "@vercel/analytics/vue";
 import { track } from "@vercel/analytics";
+import { SpeedInsights } from "@vercel/speed-insights/vue";
 import { onMounted, ref } from "vue";
 
 const lastEvent = ref<string | null>(null);
@@ -17,15 +18,16 @@ function trackCta() {
 </script>
 
 <template>
-  <!-- Inject Vercel Web Analytics (no visible UI) -->
   <Analytics />
+  <SpeedInsights />
 
-  <section class="card">
-    <div class="card__body">
-      <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; flex-wrap: wrap">
+  <section class="card analytics-card">
+    <div class="card__body analytics-card__body">
+      <div class="analytics-card__head">
         <div>
-          <h2 style="margin: 0 0 6px">Analytics</h2>
-          <p class="muted" style="margin: 0">
+          <p class="analytics-card__eyebrow">Observability</p>
+          <h2 class="analytics-card__title">Analytics</h2>
+          <p class="muted analytics-card__copy">
             Web Analytics đang được bật trên Vercel. Panel này chỉ để track custom events demo.
           </p>
         </div>
@@ -35,29 +37,29 @@ function trackCta() {
 
       <div class="spacer"></div>
 
-      <div style="overflow: auto">
-        <table style="width: 100%; border-collapse: collapse">
+      <div class="analytics-card__table">
+        <table>
           <thead>
             <tr>
-              <th style="text-align: left; padding: 10px 8px; border-bottom: 1px solid var(--border)">Event</th>
-              <th style="text-align: left; padding: 10px 8px; border-bottom: 1px solid var(--border)">Mô tả</th>
-              <th style="text-align: left; padding: 10px 8px; border-bottom: 1px solid var(--border)">Trạng thái</th>
+              <th>Event</th>
+              <th>Mô tả</th>
+              <th>Trạng thái</th>
             </tr>
           </thead>
           <tbody>
             <tr>
-              <td style="padding: 10px 8px; border-bottom: 1px solid var(--border)"><code>dashboard_view</code></td>
-              <td style="padding: 10px 8px; border-bottom: 1px solid var(--border)">Fire khi vào trang Dashboard</td>
-              <td style="padding: 10px 8px; border-bottom: 1px solid var(--border)">
+              <td><code>dashboard_view</code></td>
+              <td>Fire khi vào trang Dashboard</td>
+              <td>
                 <span class="muted">{{ lastEvent === "dashboard_view" ? "Tracked" : "—" }}</span>
               </td>
             </tr>
             <tr>
-              <td style="padding: 10px 8px; border-bottom: 1px solid var(--border)">
+              <td>
                 <code>dashboard_analytics_cta_click</code>
               </td>
-              <td style="padding: 10px 8px; border-bottom: 1px solid var(--border)">Fire khi bấm nút “Track CTA event”</td>
-              <td style="padding: 10px 8px; border-bottom: 1px solid var(--border)">
+              <td>Fire khi bấm nút “Track CTA event”</td>
+              <td>
                 <span class="muted">{{ lastEvent === "dashboard_analytics_cta_click" ? "Tracked" : "—" }}</span>
               </td>
             </tr>
@@ -66,8 +68,57 @@ function trackCta() {
       </div>
 
       <div class="spacer"></div>
-      <p class="muted" style="margin: 0">Xem số liệu trong Vercel Dashboard → Analytics.</p>
+      <p class="muted analytics-card__copy">Xem số liệu trong Vercel Dashboard → Analytics.</p>
     </div>
   </section>
 </template>
 
+<style scoped>
+.analytics-card__body {
+  padding: 28px;
+}
+
+.analytics-card__head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.analytics-card__eyebrow {
+  margin: 0 0 10px;
+  color: var(--accent);
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.analytics-card__title {
+  margin: 0 0 8px;
+  font-size: 32px;
+}
+
+.analytics-card__copy {
+  margin: 0;
+}
+
+.analytics-card__table {
+  overflow: auto;
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.analytics-card__table table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+@media (max-width: 720px) {
+  .analytics-card__body {
+    padding: 20px;
+  }
+}
+</style>

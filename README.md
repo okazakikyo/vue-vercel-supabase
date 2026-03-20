@@ -28,8 +28,26 @@ npm run dev
 - Add Environment Variables (Production):
   - `VITE_SUPABASE_URL`
   - `VITE_SUPABASE_ANON_KEY`
+  - `VITE_ADSENSE_CLIENT`
+  - `VITE_ADSENSE_SLOT_FOOTER`
+  - `VITE_ADSENSE_ENABLED`
+  - `VITE_ADSENSE_AUTO_ADS`
 
 `vercel.json` đã cấu hình rewrite để Vue Router (SPA) hoạt động trên mọi route.
+
+## 3.1) Google AdSense
+
+- App đã có sẵn fixed bottom ad bar qua component `src/components/GoogleAdBar.vue`.
+- Điền env:
+  - `VITE_ADSENSE_CLIENT=ca-pub-xxxxxxxxxxxxxxxx`
+  - `VITE_ADSENSE_SLOT_FOOTER=1234567890`
+  - `VITE_ADSENSE_ENABLED=true`
+  - `VITE_ADSENSE_AUTO_ADS=true`
+- Nếu muốn fixed ad do Google quản lý chính thức, vào AdSense:
+  - `Ads` -> site của bạn -> `Overlay formats`
+  - bật `Anchor ads`
+  - chọn vị trí `Bottom only`
+
 
 ## 4) Migrations (Supabase)
 
