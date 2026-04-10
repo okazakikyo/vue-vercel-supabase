@@ -11,6 +11,7 @@ const auth = useAuthStore();
 const email = ref("");
 const password = ref("");
 const loading = ref(false);
+const googleLoading = ref(false);
 const errorText = ref<string | null>(null);
 const infoText = ref<string | null>(null);
 const mode = ref<"signin" | "signup">("signin");
@@ -43,6 +44,26 @@ async function submit() {
     errorText.value = e instanceof Error ? e.message : "Unknown error";
   } finally {
     loading.value = false;
+  }
+}
+
+async function signInWithGoogle() {
+  errorText.value = null;
+  infoText.value = null;
+  googleLoading.value = true;
+
+  try {
+    const redirect =
+      typeof route.query.redirect === "string" && route.query.redirect.startsWith("/user/")
+        ? route.query.redirect
+        : "/user/dashboard";
+
+    await auth.signInWithGoogle(`${window.location.origin}${redirect}`);
+    infoText.value = "Đang chuyển sang Google để đăng nhập user...";
+  } catch (e) {
+    errorText.value = e instanceof Error ? e.message : "Không thể đăng nhập với Google.";
+  } finally {
+    googleLoading.value = false;
   }
 }
 
@@ -121,6 +142,25 @@ onMounted(async () => {
             </button>
           </div>
         </form>
+
+        <div class="login-divider">
+          <span>Hoặc</span>
+        </div>
+
+        <section class="login-oauth">
+          <div>
+            <p class="login-oauth__eyebrow">User only</p>
+            <h3 class="login-oauth__title">Đăng nhập nhanh bằng Google cho người dùng</h3>
+            <p class="muted login-oauth__copy">
+              Luồng này chỉ dành cho tài khoản user để xem orders và thống kê. Admin vẫn dùng email/password.
+            </p>
+          </div>
+
+          <button class="btn login-google-btn" type="button" :disabled="googleLoading || loading" @click="signInWithGoogle">
+            <span class="login-google-btn__icon">G</span>
+            {{ googleLoading ? "Đang chuyển hướng..." : "Tiếp tục với Google" }}
+          </button>
+        </section>
       </div>
     </article>
   </section>
@@ -209,6 +249,77 @@ onMounted(async () => {
   justify-content: space-between;
   align-items: center;
   margin-top: 8px;
+}
+
+.login-divider {
+  position: relative;
+  margin: 22px 0 18px;
+  text-align: center;
+}
+
+.login-divider::before {
+  content: "";
+  position: absolute;
+  inset: 50% 0 auto;
+  height: 1px;
+  background: var(--border);
+}
+
+.login-divider span {
+  position: relative;
+  display: inline-block;
+  padding: 0 12px;
+  background: var(--surface);
+  color: var(--muted);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.login-oauth {
+  display: grid;
+  gap: 16px;
+  padding: 18px;
+  border: 1px solid var(--border);
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.login-oauth__eyebrow {
+  margin: 0 0 8px;
+  color: var(--accent);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.login-oauth__title {
+  margin: 0 0 8px;
+  font-size: 22px;
+}
+
+.login-oauth__copy {
+  margin: 0;
+}
+
+.login-google-btn {
+  width: 100%;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.login-google-btn__icon {
+  width: 22px;
+  height: 22px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background: #fff;
+  color: #1f1f1f;
+  font-size: 12px;
+  font-weight: 700;
 }
 
 form {

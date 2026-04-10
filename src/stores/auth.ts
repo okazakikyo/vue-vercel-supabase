@@ -81,6 +81,22 @@ export const useAuthStore = defineStore("auth", {
       this.session = data.session;
       await this.refreshProfile();
     },
+    async signInWithGoogle(redirectTo?: string) {
+      const finalRedirect =
+        redirectTo ??
+        (typeof window !== "undefined" ? `${window.location.origin}/user/dashboard` : undefined);
+
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: "google",
+        options: finalRedirect
+          ? {
+              redirectTo: finalRedirect,
+            }
+          : undefined,
+      });
+
+      if (error) throw error;
+    },
     async signOut() {
       const { error } = await supabase.auth.signOut();
       if (error) throw error;
